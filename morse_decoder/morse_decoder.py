@@ -9,11 +9,11 @@ class Morse_decoder:
     Serial input needs to be separeted by newline, one signal per line
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baudrate=9600, timeout=0.1):
+    def __init__(self, port="/dev/ttyUSB0", baudrate=9600, time=1):
         self.serial_port = port
         self.current_symbol = ""
         self.current_word = ""
-        self.serial = serial.Serial(port, baudrate, timeout)
+        self.serial = serial.Serial(port, baudrate, timeout=time)
 
     def start_decoding(self):
         while True:
@@ -21,10 +21,11 @@ class Morse_decoder:
 
     def read_one_signal(self):
         try:
-            signal = self.serial.readline()
+            signal = self.serial.readline().decode("utf-8").strip()
             print("Read:            " + signal)
             self.process_signal(signal)
         except Exception as e:
+            print(e)
             return
 
     def process_signal(self, signal):
@@ -36,8 +37,6 @@ class Morse_decoder:
             self.handle_word_end()
         else:
             self.update_current_symbol(signal)
-        print("current sym   " + self.current_symbol)
-        print("current word   " + self.current_word)
 
     def update_current_symbol(self, signal):
         self.current_symbol += signal
