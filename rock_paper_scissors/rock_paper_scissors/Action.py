@@ -2,6 +2,10 @@ from rock_paper_scissors import actionTypes
 
 
 class Action:
+    """
+    Helper class for Actions, defines methods for comparing actions.
+    """
+
     def __init__(self, action):
         if action not in [actionTypes.PAPER, actionTypes.ROCK, actionTypes.SCISSORS]:
             raise Exception("Illegal argument, action must be one of actionTypes")

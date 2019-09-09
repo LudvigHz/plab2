@@ -1,9 +1,13 @@
 from rock_paper_scissors import actionTypes
-from rock_paper_scissors.Action import Action
 from rock_paper_scissors.players.BasePlayer import BasePlayer
 
 
 class MostNormal(BasePlayer):
+    """
+    Player that chooses actions based on opponents history.
+    Chooses the opposite of the opponents most chosen action.
+    """
+
     def __str__(self):
         return "Most normal"
 

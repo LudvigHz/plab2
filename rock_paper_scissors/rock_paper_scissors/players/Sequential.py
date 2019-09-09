@@ -3,6 +3,10 @@ from rock_paper_scissors.players.BasePlayer import BasePlayer
 
 
 class Sequential(BasePlayer):
+    """
+    Sequential player, chooses actions sequentially.
+    """
+
     def __str__(self):
         return "Sequential"
 

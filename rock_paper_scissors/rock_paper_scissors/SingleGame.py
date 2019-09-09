@@ -1,10 +1,16 @@
-from rock_paper_scissors.players import (Historian, MostNormal, Random,
-                                         Sequential)
-
+"""
+Single game module.
+contains the class for SingleGame
+"""
 
 class SingleGame:
+    """
+    A class for a single game, takes two players.
+    """
+
     def __init__(self, player1, player2):
         self.player1, self.player2 = player1, player2
+        self.winner = None
 
     def run_game(self):
         self.player1.choose_action(self.player2)
@@ -12,7 +18,6 @@ class SingleGame:
         self.player1.receive_result(self.player2)
         self.player2.receive_result(self.player1)
 
-        self.winner = None
         if self.player1.game_history[-1]["result"] == 2:
             self.winner = self.player1
         elif self.player2.game_history[-1]["result"] == 2:

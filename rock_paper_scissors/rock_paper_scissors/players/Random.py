@@ -4,6 +4,10 @@ from rock_paper_scissors import Action, actionTypes, players
 
 
 class Random(players.BasePlayer):
+    """
+    Player which chooses actions randomly.
+    """
+
     def __str__(self):
         return "Random"
 

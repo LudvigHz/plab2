@@ -16,13 +16,16 @@ class BasePlayer:
         self.last_action = None
 
     def get_name(self):
+        """Returns name of the player."""
         return self.__str__()
 
     def choose_action(self, action):
+        """Chooses the action specified from arg action"""
         self.last_action = Action(action)
         self.action_history.append(self.last_action)
 
     def calculate_result(self, own_action, opponent_action):
+        """Calculates the result of a game, based on the actions"""
         if own_action > opponent_action:
             return 2
         elif own_action == opponent_action:
@@ -31,6 +34,7 @@ class BasePlayer:
             return 0
 
     def choose_opposite_action(self, action):
+        """Same as choose_action but chooses the opposite (beating) action"""
         if action == actionTypes.ROCK:
             opposite = actionTypes.PAPER
         elif action == actionTypes.PAPER:
@@ -41,6 +45,7 @@ class BasePlayer:
         self.action_history.append(self.last_action)
 
     def receive_result(self, player):
+        """Receive the result and save it to players history"""
         hist_object = {
             "player_move": self.last_action,
             "opponent_move": player.last_action,
@@ -50,6 +55,7 @@ class BasePlayer:
         self.game_history.append(hist_object)
 
     def get_all_results(self):
+        """Returns a dict with win/loss/tie statistics for the player"""
         wins = list(
             filter(
                 lambda a: a is not None,
@@ -72,6 +78,7 @@ class BasePlayer:
         return {"wins": len(wins), "ties": len(ties), "losses": len(losses)}
 
     def create_plot(self):
+        """Create a plot showing evolution of the average score"""
         results = [item["result"] for item in self.game_history]
         avg_results = []
         for i in range(1, len(results)):

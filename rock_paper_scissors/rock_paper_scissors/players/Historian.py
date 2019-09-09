@@ -7,6 +7,11 @@ from .. import actionTypes
 
 
 class Historian(BasePlayer):
+    """
+    Player that chooses action based on the opponents history.
+    Looks for patterns in the history based on the last moves.
+    """
+
     def __init__(self, memory):
         super().__init__()
         self.memory = memory

@@ -1,3 +1,6 @@
+"""
+Module containing all included player types.
+"""
 from .BasePlayer import BasePlayer
 from .Historian import Historian
 from .MostNormal import MostNormal
