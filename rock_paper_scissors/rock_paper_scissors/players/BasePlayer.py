@@ -22,7 +22,6 @@ class BasePlayer:
     def choose_action(self, action):
         """Chooses the action specified from arg action"""
         self.last_action = Action(action)
-        self.action_history.append(self.last_action)
 
     def calculate_result(self, own_action, opponent_action):
         """Calculates the result of a game, based on the actions"""
@@ -53,6 +52,7 @@ class BasePlayer:
             "result": self.calculate_result(self.last_action, player.last_action),
         }
         self.game_history.append(hist_object)
+        self.action_history.append(self.last_action)
 
     def get_all_results(self):
         """Returns a dict with win/loss/tie statistics for the player"""
@@ -88,7 +88,7 @@ class BasePlayer:
         plt.figure()
         plt.title(self.__str__() + " results")
         plt.xlabel("Number of games")
-        plt.ylabel("Score")
+        plt.ylabel("Avg score")
         plt.ylim((0, 2))
         plt.plot(num_games, avg_results)
         plt.show()

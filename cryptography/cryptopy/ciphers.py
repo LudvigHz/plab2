@@ -131,7 +131,7 @@ class Unbreakable(Cypher):
     def generate_keys(self, **kwargs):
         # Take a random word from the list of english words
         key = kwargs.get("key", None)
-        if key == None:
+        if key is None:
             with open("english_words.txt") as file:
                 word_count = len(file.readlines())
             key = getline("english_words.txt", randint(0, word_count - 1)).strip()

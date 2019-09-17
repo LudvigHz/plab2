@@ -35,6 +35,8 @@ class Historian(BasePlayer):
                 if opponent.action_history[i : i + self.memory] == sub_sequence:
                     action_count[opponent.action_history[i + self.memory].action] += 1
 
+        if list(action_count.values()) != [0, 0, 0]:
+            print(action_count.values())
             next_action = sorted(
                 action_count.items(), key=lambda kv: (kv[1], kv[0]), reverse=True
             )[0][0]
