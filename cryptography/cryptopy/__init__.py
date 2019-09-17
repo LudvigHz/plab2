@@ -64,20 +64,33 @@ class Hacker(Person):
         except:
             return 0
 
-    def decode(self, content, cipher, hit=0.5):
+    def decode(self, content, cipher, hit=0.7):
         """
         Attempt to brute force a cipher, given an encoded message
-        :param hit=0.5: the amount of words needed to match for the encoded messsage to be
+        :param hit=0.7: the amount of words needed to match for the encoded messsage to be
         acceptable
         """
         success = False
-        key = 0
+        key, index = 0, 0
+        try:
+            valid_keys = cipher.valid_keys
+            key = valid_keys[index]
+        except:
+            valid_keys = None
+
         while not success:
-            decoded = cipher.decode(content, key)
+            try:
+                decoded = cipher.decode(content, cipher.generate_inverse(key))
+            except:
+                decoded = cipher.decode(content, key)
             hitrate = self.check_message(decoded)
             if hitrate >= hit:
                 success = True
             else:
-                key += 1
+                index += 1
+                if valid_keys is not None:
+                    key = valid_keys[index]
+                else:
+                    key = index
 
         return decoded

@@ -45,6 +45,10 @@ class Ceasar(Cypher):
         key = randint(1, 9999)
         return (key, key)
 
+    @property
+    def valid_keys(self):
+        return range(1, 9999)
+
     def encode(self, content, key):
         result = ""
         for char in content:
@@ -77,6 +81,10 @@ class Multiplicative(Cypher):
             return self.generate_keys()
         return (key, inv)
 
+    @property
+    def valid_keys(self):
+        return range(1, 9999)
+
     def encode(self, content, key):
         result = ""
         for char in content:
@@ -99,6 +107,10 @@ class Affine(Cypher):
         self.ceasar = Ceasar()
         self.multi = Multiplicative()
 
+    @property
+    def valid_keys(self):
+        return (self.ceasar.valid_keys, self.multi.valid_keys)
+
     def generate_keys(self):
         mkeys = self.multi.generate_keys()
         ckeys = self.ceasar.generate_keys()
@@ -116,22 +128,34 @@ class Unbreakable(Cypher):
     Cipher using the 'unbreakable' method to encrypt messages
     """
 
-    def generate_keys(self):
+    def generate_keys(self, **kwargs):
         # Take a random word from the list of english words
-        with open("english_words.txt") as file:
-            word_count = len(file.readlines())
-        key = getline("english_words.txt", randint(0, word_count - 1)).strip()
-        # Calculate the inverse by iterating through the key and finding the appropriate "opposite"
-        # symbol
+        key = kwargs.get("key", None)
+        if key == None:
+            with open("english_words.txt") as file:
+                word_count = len(file.readlines())
+            key = getline("english_words.txt", randint(0, word_count - 1)).strip()
+        return (key, self.generate_inverse(key))
+
+    def generate_inverse(self, word):
+        """
+        Calculate the inverse by iterating through the key and finding the appropriate "opposite"
+        symbol
+        """
         inv = "".join(
             [
                 self.symbols[
                     self.symbol_count - (self.symbols.index(i) % self.symbol_count)
                 ]
-                for i in key
+                for i in word
             ]
         )
-        return (key, inv)
+        return inv
+
+    @property
+    def valid_keys(self):
+        with open("english_words.txt") as file:
+            return [i.strip() for i in file.readlines()]
 
     def encode(self, content, key):
         result = ""
