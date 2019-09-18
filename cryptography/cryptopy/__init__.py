@@ -1,5 +1,8 @@
 import mmap
 import re
+import signal
+
+from tqdm import tqdm
 
 from .ciphers import RSA, Affine, Ceasar, Multiplicative, Unbreakable
 
@@ -74,23 +77,37 @@ class Hacker(Person):
         key, index = 0, 0
         try:
             valid_keys = cipher.valid_keys
+            if type(valid_keys) is tuple:
+                return self.decode_multi_keys(content, cipher, hit, valid_keys)
             key = valid_keys[index]
         except:
             valid_keys = None
 
-        while not success:
-            try:
-                decoded = cipher.decode(content, cipher.generate_inverse(key))
-            except:
-                decoded = cipher.decode(content, key)
-            hitrate = self.check_message(decoded)
-            if hitrate >= hit:
-                success = True
-            else:
-                index += 1
-                if valid_keys is not None:
-                    key = valid_keys[index]
+        with tqdm(total=len(valid_keys if valid_keys is not None else [])) as pbar:
+            while not success:
+                try:
+                    decoded = cipher.decode(content, cipher.generate_inverse(key))
+                except:
+                    decoded = cipher.decode(content, key)
+                hitrate = self.check_message(decoded)
+                if hitrate >= hit:
+                    success = True
                 else:
-                    key = index
+                    index += 1
+                    if valid_keys is not None:
+                        key = valid_keys[index]
+                    else:
+                        key = index
+                pbar.update(1)
 
         return decoded
+
+    def decode_multi_keys(self, content, cipher, hit, valid_keys):
+        with tqdm(total=len(valid_keys[0]) ** 2) as pbar:
+            for key0 in valid_keys[0]:
+                for key1 in valid_keys[1]:
+                    decoded = cipher.decode(content, (key1, key0))
+                    hitrate = self.check_message(decoded)
+                    if hitrate >= hit:
+                        return decoded
+                    pbar.update(1)

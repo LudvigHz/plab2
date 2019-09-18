@@ -20,7 +20,7 @@ print("Attempting to hack the code:")
 h = Hacker()
 
 start = time.time()
-# hacked = h.decode(text_encrypted, c, 0.8)
+hacked = h.decode(text_encrypted, c, 0.8)
 end = time.time()
 
-# print(f"Hacker used {end-start} seconds to find the code: {hacked}")
+print(f"Hacker used {end-start} seconds to find the code: {hacked}")
