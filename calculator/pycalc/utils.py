@@ -61,6 +61,8 @@ class Function:
     """
 
     def __init__(self, func):
+        if not callable(func):
+            raise TypeError("Paramenter func needs to be a function")
         self.func = func
 
     def execute(self, element, debug=False):
@@ -70,3 +72,18 @@ class Function:
         if debug:
             print(f"Function: {self.func.__name__} ({element}) = {result}")
         return result
+
+
+class Operator:
+    """
+    A class for an operator used un the calculator
+    """
+
+    def __init__(self, operation, **kwargs):
+        if not callable(operation):
+            raise TypeError("Paramenter func needs to be a function")
+        self.operation = operation
+        self.strength = kwargs.get("strength", 0)
+
+    def execute(self, a, b):
+        return self.operation(a, b)

@@ -1,5 +1,9 @@
+import math
 import unittest
-from pycalc import Queue, Stack
+
+import numpy as np
+
+from pycalc import Calculator, Function, Operator, Queue, Stack
 
 
 class TestQueue(unittest.TestCase):
@@ -62,3 +66,83 @@ class TestStack(unittest.TestCase):
         self.assertEqual(stack.pop(), 3)
         self.assertEqual(stack.peek(), 2)
         self.assertEqual(stack.size, 2)
+
+
+class TestFunctionAndOperator(unittest.TestCase):
+    def setUp(self):
+        self.sin_function = Function(math.sin)
+        self.floor_function = Function(math.floor)
+        self.add_operator = Operator(np.add)
+        self.modulo_operator = Operator(np.mod)
+
+    def test_create_function_illegal_arguments(self):
+        """A function needs a function as an argument"""
+        self.assertRaises(TypeError, Function, "a")
+        self.assertRaises(TypeError, Function, 1)
+
+    def test_function_execute(self):
+        """A function should execute and return the correct value"""
+        self.assertEqual(self.sin_function.execute(4), math.sin(4))
+        self.assertEqual(self.floor_function.execute(2.89), math.floor(2.89))
+
+    def test_operator_illegal_argument(self):
+        """An operator needs a function as an argument"""
+        self.assertRaises(TypeError, Operator, "a")
+        self.assertRaises(TypeError, Operator, 1)
+
+    def test_operator_execute(self):
+        """An operator should give the correct result"""
+        self.assertEqual(self.add_operator.execute(1, 3), 1 + 3)
+        self.assertEqual(self.modulo_operator.execute(5, 2), 5 % 2)
+
+
+class TestCalculator(unittest.TestCase):
+    def setUp(self):
+        self.defaultCalc = Calculator()
+        self.defaultOperations = self.defaultCalc.supported_operations
+        self.defaultFunctions = self.defaultCalc.supported_functions
+
+    def test_create_calculator(self):
+        """
+        A calculator should be created with no or all options
+        """
+        ops = {"MOD": np.mod, "ABS": np.abs}
+        funcs = {"TAN": np.tan}
+
+        calcWithOperations = Calculator(operations=ops)
+        self.assertEqual(
+            calcWithOperations.supported_operations,
+            self.defaultOperations + list(ops.keys()),
+        )
+
+        calcWithFunctions = Calculator(functions=funcs)
+        self.assertEqual(
+            calcWithFunctions.supported_functions,
+            self.defaultFunctions + list(funcs.keys()),
+        )
+
+    def test_calculator_execute(self):
+        """A calculator should give the correct results"""
+        self.assertEqual(self.defaultCalc.operators["MULT"].execute(2, 3), 2 * 3)
+        self.assertEqual(self.defaultCalc.operators["ADD"].execute(2, 3), 2 + 3)
+        self.assertEqual(self.defaultCalc.functions["EXP"].execute(2), np.exp(2))
+        self.assertEqual(self.defaultCalc.functions["SIN"].execute(2), np.sin(2))
+        self.assertEqual(
+            self.defaultCalc.functions["EXP"].execute(
+                self.defaultCalc.operators["ADD"].execute(
+                    1, self.defaultCalc.operators["MULT"].execute(2, 3)
+                )
+            ),
+            np.exp(1 + 2 * 3),
+        )
+
+    def test_rpn_calculation(self):
+        """A calculator executing a rpn calculation should give the corrrect result"""
+        calculation = Queue()
+        calculation.push(1)
+        calculation.push(2)
+        calculation.push(3)
+        calculation.push(self.defaultCalc.operators["MULT"])
+        calculation.push(self.defaultCalc.operators["ADD"])
+        calculation.push(self.defaultCalc.functions["EXP"])
+        self.assertEqual(self.defaultCalc.execute_rpn(calculation), np.exp(1 + 2 * 3))
