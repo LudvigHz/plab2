@@ -26,6 +26,9 @@ class Container:
     def peek(self):
         raise NotImplementedError
 
+    def __str__(self):
+        return [str(item) for item in self._items]
+
 
 class Queue(Container):
     """
@@ -73,6 +76,9 @@ class Function:
             print(f"Function: {self.func.__name__} ({element}) = {result}")
         return result
 
+    def __str__(self):
+        return self.func.__name__
+
 
 class Operator:
     """
@@ -87,3 +93,6 @@ class Operator:
 
     def execute(self, a, b):
         return self.operation(a, b)
+
+    def __str__(self):
+        return self.operation.__name__

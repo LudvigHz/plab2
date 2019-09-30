@@ -146,3 +146,77 @@ class TestCalculator(unittest.TestCase):
         calculation.push(self.defaultCalc.operators["ADD"])
         calculation.push(self.defaultCalc.functions["EXP"])
         self.assertEqual(self.defaultCalc.execute_rpn(calculation), np.exp(1 + 2 * 3))
+
+    def test_convert_to_rpn(self):
+        """
+        A calculator should successfully convert
+        from a stack containing the calculation to RPN
+        """
+        calculation = Queue()
+        calculation.push(self.defaultCalc.functions["EXP"])
+        calculation.push("(")
+        calculation.push(1.0)
+        calculation.push(self.defaultCalc.operators["ADD"])
+        calculation.push(2.0)
+        calculation.push(self.defaultCalc.operators["MULT"])
+        calculation.push(3.0)
+        calculation.push(")")
+        calculation.push(self.defaultCalc.operators["SUB"])
+        calculation.push(1.0)
+
+        rpn_queue = Queue()
+        rpn_queue.push(1.0)
+        rpn_queue.push(2.0)
+        rpn_queue.push(3.0)
+        rpn_queue.push(self.defaultCalc.operators["MULT"])
+        rpn_queue.push(self.defaultCalc.operators["ADD"])
+        rpn_queue.push(self.defaultCalc.functions["EXP"])
+        rpn_queue.push(1.0)
+        rpn_queue.push(self.defaultCalc.operators["SUB"])
+
+        self.assertEqual(self.defaultCalc.to_rpn(calculation)._items, rpn_queue._items)
+        calculation.push("SUB")
+
+    def test_parse_string_to_calculation(self):
+        """
+        A calculator should successfully convert
+        from a stack containing the calculation to RPN
+        """
+        calculation = Queue()
+        calculation.push(self.defaultCalc.functions["EXP"])
+        calculation.push("(")
+        calculation.push(1.0)
+        calculation.push(self.defaultCalc.operators["ADD"])
+        calculation.push(2.0)
+        calculation.push(self.defaultCalc.operators["MULT"])
+        calculation.push(3.0)
+        calculation.push(")")
+        calculation.push(self.defaultCalc.operators["SUB"])
+        calculation.push(1.0)
+
+        self.assertEqual(
+            self.defaultCalc.parse_string("exp(1 add 2 mult 3) sub 1")._items,
+            calculation._items,
+        )
+
+    def test_calculation_from_string(self):
+        """
+        A calculator should give the correct results when given a string with
+        a calculation.
+        """
+        self.assertEqual(
+            self.defaultCalc.calculate_expression("exp(1 add 2 mult 3) sub 1"),
+            np.exp(1 + 2 * 3) - 1,
+        )
+
+        self.assertEqual(
+            self.defaultCalc.calculate_expression("sqrt(3) mult 2 sub 9 div 2"),
+            np.sqrt(3) * 2 - 9 / 2,
+        )
+
+        self.assertEqual(
+            self.defaultCalc.calculate_expression(
+                "((15 div (7 sub (1 add 1))) mult 3) sub (2 add (1 add 1))"
+            ),
+            ((15 / (7 - (1 + 1))) * 3) - (2 + (1 + 1)),
+        )
